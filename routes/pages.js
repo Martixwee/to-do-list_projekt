@@ -1,102 +1,67 @@
 const fs = require("fs");
 const path = require("path");
-const store = require("../storage/usersStore");
+const store = require("../storage/tasksStore");
 
-const VIEWS_DIR = path.join(__dirname, "..", "views");
-
+// Pomocná funkce pro načítání HTML šablon
 function loadView(name) {
-  return fs.readFileSync(path.join(VIEWS_DIR, name), "utf-8");
+  return fs.readFileSync(path.join(__dirname, "../views", name), "utf-8");
 }
 
-function render(template, vars) {
-  let out = template;
-  for (const [k, v] of Object.entries(vars)) {
-    out = out.replaceAll(`{{${k}}}`, String(v));
+// Pomocná funkce pro nahrazování {{proměnných}} v HTML
+function render(tpl, data) {
+  let html = tpl;
+  for (const key in data) {
+    html = html.replace(new RegExp(`{{${key}}}`, "g"), data[key]);
   }
-  return out;
-}
-
-function renderLayout({ title, heading, content }) {
-  const layout = loadView("layout.html");
-  return render(layout, { title, heading, content });
-}
-
-function sendHtml(res, html, status = 200) {
-  res.writeHead(status, { "Content-Type": "text/html; charset=utf-8" });
-  res.end(html);
+  return html;
 }
 
 function handlePages(req, res) {
-  // GET /public/app.js
-  if (req.url === "/public/app.js" && req.method === "GET") {
-    const file = path.join(__dirname, "..", "public", "app.js");
-    const js = fs.readFileSync(file, "utf-8");
-    res.writeHead(200, { "Content-Type": "application/javascript; charset=utf-8" });
-    return res.end(js);
+  const tasks = store.getAll();
+
+  // --- HLAVNÍ STRÁNKA (Seznam) ---
+  if (req.url === "/" && req.method === "GET") {
+const rows = tasks.map(t => `
+  <tr>
+    <td>${t.id}</td>
+    <td>${t.title}</td>
+    <td>${t.completed ? '✅ Hotovo' : '⏳ Čeká'}</td>
+    <td>
+      <button data-done-id="${t.id}" data-current-state="${t.completed}">
+        ${t.completed ? 'Zrušit' : 'Hotovo'}
+      </button>
+      <a href="/edit/${t.id}"><button type="button">Upravit</button></a>
+      <button data-delete-id="${t.id}">Smazat</button>
+    </td>
+  </tr>
+`).join("");
+
+    const indexTpl = loadView("index.html");
+    const content = render(indexTpl, { rows: rows || '<tr><td colspan="4">Žádné úkoly.</td></tr>' });
+
+    res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+    return res.end(render(loadView("layout.html"), { title: "ToDo List", content }));
   }
 
-  // GET /
-if (req.url === "/" && req.method === "GET") {
-  const users = store.getAll();
-
-  const rows = users.map(u => `
-    <tr>
-      <td>${u.id}</td>
-      <td><a href="/user/${u.id}">${u.name}</a></td>
-      <td>${u.age}</td>
-      <td>
-        <a href="/user/${u.id}">Detail</a>
-        <a href="/edit/${u.id}">Upravit</a>
-        <button data-delete-id="${u.id}">Smazat</button>
-      </td>
-    </tr>
-  `).join("");
-
-  const indexTpl = loadView("index.html");
-  const content = render(indexTpl, {
-    rows: rows || `<tr><td colspan="4">Žádná data.</td></tr>`
-  });
-
-  return sendHtml(
-    res,
-    renderLayout({
-      title: "Uživatelé",
-      heading: "Správa uživatelů",
-      content
-    })
-  );
-}
-
-
-  // GET /user/:id (detail)
-  if (req.url.startsWith("/user/") && req.method === "GET") {
-    const id = Number(req.url.split("/")[2]);
-    const user = store.getById(id);
-    if (!user) {
-      const errTpl = loadView("error.html");
-      const content = render(errTpl, { message: "Uživatel nenalezen." });
-      return sendHtml(res, renderLayout({ title: "Chyba", heading: "Chyba", content }), 404);
-    }
-
-    const tpl = loadView("detail.html");
-    const content = render(tpl, user);
-    return sendHtml(res, renderLayout({ title: "Detail", heading: "Detail uživatele", content }));
-  }
-
-  // GET /edit/:id (edit formulář)
+  // --- STRÁNKA ÚPRAVY (Edit) ---
   if (req.url.startsWith("/edit/") && req.method === "GET") {
     const id = Number(req.url.split("/")[2]);
-    const user = store.getById(id);
+    const task = tasks.find(t => t.id === id);
 
-    if (!user) {
-      const errTpl = loadView("error.html");
-      const content = render(errTpl, { message: "Uživatel nenalezen." });
-      return sendHtml(res, renderLayout({ title: "Chyba", heading: "Chyba", content }), 404);
+    if (!task) {
+      res.writeHead(404);
+      return res.end("Úkol nenalezen");
     }
 
-    const tpl = loadView("edit.html");
-    const content = render(tpl, user);
-    return sendHtml(res, renderLayout({ title: "Editace", heading: "Editace uživatele", content }));
+    const editTpl = loadView("edit.html");
+    const content = render(editTpl, {
+      id: task.id,
+      title: task.title,
+      checked: task.completed ? "checked" : ""
+    });
+
+    res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+    return res.end(render(loadView("layout.html"), { title: "Upravit úkol", content }));
   }
 
   return false;
