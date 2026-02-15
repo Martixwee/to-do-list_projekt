@@ -3,18 +3,22 @@ const path = require("path");
 
 const FILE_PATH = path.join(__dirname, "tasks.json");
 
-// Pomocná funkce pro načtení (ošetřuje chybu parsování)
 function loadTasks() {
   try {
+    // Pokud soubor neexistuje, vytvoříme ho, aby to nespadlo
+    if (!fs.existsSync(FILE_PATH)) {
+      fs.writeFileSync(FILE_PATH, "[]", "utf-8");
+      return [];
+    }
     const content = fs.readFileSync(FILE_PATH, "utf-8");
     return JSON.parse(content || "[]");
   } catch (e) {
-    return []; // Pokud soubor neexistuje nebo je rozbitý, vrátíme prázdné pole
+    return [];
   }
 }
 
 function saveTasks(tasks) {
-  fs.writeFileSync(FILE_PATH, JSON.stringify(tasks, null, 2));
+  fs.writeFileSync(FILE_PATH, JSON.stringify(tasks, null, 2), "utf-8");
 }
 
 module.exports = {
@@ -24,7 +28,8 @@ module.exports = {
     const tasks = loadTasks();
     const newTask = {
       id: Date.now(),
-      title: data.title,
+      // Ošetření, aby název nebyl prázdný
+      title: data.title || "Bez názvu",
       completed: !!data.completed
     };
     tasks.push(newTask);
@@ -32,9 +37,10 @@ module.exports = {
     return newTask;
   },
 
+ // ... (začátek loadTasks a saveTasks zůstává stejný)
   update: (id, patch) => {
     const tasks = loadTasks();
-    const idx = tasks.findIndex(t => t.id === id);
+    const idx = tasks.findIndex(t => t.id === Number(id)); // Převod na Number!
     if (idx === -1) return null;
 
     if (patch.title !== undefined) tasks[idx].title = patch.title;
@@ -46,7 +52,7 @@ module.exports = {
 
   remove: (id) => {
     const tasks = loadTasks();
-    const filtered = tasks.filter(t => t.id !== id);
+    const filtered = tasks.filter(t => t.id !== Number(id)); // Převod na Number!
     if (tasks.length === filtered.length) return false;
     saveTasks(filtered);
     return true;

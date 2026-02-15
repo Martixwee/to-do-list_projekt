@@ -1,0 +1,86 @@
+:root {
+  --primary: #4f46e5;
+  --success: #10b981;
+  --danger: #ef4444;
+  --bg: #f3f4f6;
+  --card: #ffffff;
+  --text: #1f2937;
+}
+
+body { 
+  font-family: 'Inter', system-ui, -apple-system, sans-serif; 
+  background-color: var(--bg);
+  color: var(--text);
+  max-width: 800px; 
+  margin: 3rem auto; 
+  padding: 0 1rem; 
+  line-height: 1.5;
+}
+
+.card { 
+  background: var(--card); 
+  border-radius: 12px; 
+  padding: 2rem; 
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  margin-bottom: 2rem;
+  border: none;
+}
+
+h2 { margin-top: 0; color: var(--primary); font-size: 1.25rem; }
+
+/* Stylová tabulka */
+table { border-collapse: separate; border-spacing: 0; width: 100%; }
+th { text-align: left; padding: 1rem; color: #6b7280; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; border-bottom: 1px solid #e5e7eb; }
+td { padding: 1rem; border-bottom: 1px solid #f3f4f6; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover { background-color: #fafafa; }
+
+/* Vylepšená tlačítka */
+button { 
+  padding: 0.5rem 1rem; 
+  border-radius: 6px; 
+  font-weight: 500; 
+  cursor: pointer; 
+  transition: all 0.2s;
+  border: 1px solid #e5e7eb;
+  background: white;
+}
+
+button:hover { filter: brightness(0.95); transform: translateY(-1px); }
+
+/* Barevné akce */
+[data-done-id] { color: var(--success); border-color: var(--success); }
+[data-done-id]:hover { background: var(--success); color: white; }
+[data-delete-id] { color: var(--danger); border-color: var(--danger); }
+[data-delete-id]:hover { background: var(--danger); color: white; }
+
+.completed-text { text-decoration: line-through; color: #9ca3af; }
+.badge { padding: 0.25rem 0.5rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 600; }
+.badge-wait { background: #fef3c7; color: #92400e; }
+.badge-done { background: #d1fae5; color: #065f46; }
+
+/* Formulář nahoře */
+#createForm { display: flex; gap: 0.5rem; }
+#createForm input { flex: 1; padding: 0.75rem; border: 1px solid #d1d5db; border-radius: 8px; outline: none; transition: border-color 0.2s; }
+#createForm input:focus { border-color: var(--primary); ring: 2px var(--primary); }
+#createForm button { background: var(--primary); color: white; border: none; }
+
+/* Styl pro splněný řádek */
+.row-completed { background-color: #f0fff4 !important; } /* Jemně zelená */
+.text-completed { text-decoration: line-through; color: #718096; }
+
+/* Styly pro odznaky (badgy) */
+.badge { padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; }
+.badge-done { background-color: #c6f6d5; color: #22543d; }
+.badge-wait { background-color: #fed7d7; color: #822727; }
+
+/* Styl pro filtrační tlačítka */
+.filter-bar { margin-bottom: 1rem; display: flex; gap: 10px; }
+.filter-btn { 
+  background: #edf2f7; border: none; padding: 8px 15px; 
+  border-radius: 20px; cursor: pointer; transition: 0.3s;
+}
+.filter-btn.active { background: #4a5568; color: white; }
+
+/* Tlačítka akcí */
+.btn-del:hover { background-color: #fff5f5; color: #c53030; border-color: #feb2b2; }

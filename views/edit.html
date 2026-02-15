@@ -1,17 +1,19 @@
 <div class="card">
-  <h2>Upravit úkol #{{id}}</h2>
-  <form id="editForm" data-id="{{id}}">
-    <div class="row">
+  <h2>Upravit úkol: {{title}}</h2> <form id="editForm" data-id="{{id}}"> <div class="row">
       <label>Název úkolu:</label>
-      <input name="title" value="{{title}}" required />
+      <input type="text" name="title" value="{{title}}" required />
     </div>
+    
     <div class="row">
       <label>
         <input type="checkbox" name="completed" {{checked}} /> Splněno
       </label>
     </div>
-    <button type="submit">Uložit změny</button>
-    <a href="/">Zpět</a>
+    
+    <div class="actions">
+      <button type="submit">Uložit změny</button>
+      <a href="/"><button type="button">Zrušit</button></a>
+    </div>
   </form>
   <p id="editMsg"></p>
 </div>

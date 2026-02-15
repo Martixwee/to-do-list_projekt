@@ -1,28 +1,32 @@
 <div class="card">
   <h2>Přidat nový úkol</h2>
-  <form id="createForm">
-    <div class="row">
-      <label>Co je potřeba udělat:</label><br />
-      <input name="title" placeholder="Např. Koupit rohlíky" required />
-    </div>
-    <button type="submit">Přidat úkol</button>
-    <p class="muted" id="createMsg"></p>
-  </form>
+<form id="createForm">
+  <input type="text" name="title" placeholder="Co je třeba udělat?" required>
+  <button type="submit">Přidat úkol</button>
+</form>
+</div>
+
+<div class="card">
+  <h2>🔍 Filtrovat úkoly</h2>
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterTasks('all', this)">Vše 📋</button>
+    <button class="filter-btn" onclick="filterTasks('pending', this)">Nesplněno ⏳</button>
+    <button class="filter-btn" onclick="filterTasks('completed', this)">Splněno ✅</button>
+  </div>
 </div>
 
 <div class="card">
   <h2>Můj seznam úkolů</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Stav</th><th>Úkol</th><th>Akce</th>
-      </tr>
-    </thead>
-    <tbody>
-      {{rows}}
-    </tbody>
-  </table>
-</div>
-
-  <p class="muted">Tip: Smazání je přes DELETE, editace přes PUT (odesílá se přes JS fetch).</p>
-</div>
+<table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Úkol</th>
+      <th>Stav</th>
+      <th>Akce</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{rows}}
+  </tbody>
+</table>
