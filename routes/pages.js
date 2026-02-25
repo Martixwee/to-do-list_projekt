@@ -17,6 +17,18 @@ function render(tpl, data) {
 }
 
 function handlePages(req, res) {
+  if (req.url === "/style.css") {
+    try {
+      const cssPath = path.join(__dirname, "../public/style.css");
+      const cssContent = fs.readFileSync(cssPath, "utf-8");
+      // DŮLEŽITÉ: Musí to být text/css, jinak to prohlížeč bude ignorovat
+      res.writeHead(200, { "Content-Type": "text/css; charset=utf-8" });
+      return res.end(cssContent);
+    } catch (e) {
+      res.writeHead(404);
+      return res.end("CSS nenalezeno");
+    }
+  }
   if (req.url === "/js/app.js") {
     try {
       const jsPath = path.join(__dirname, "../public/app.js");

@@ -1,0 +1,166 @@
+:root {
+  --primary: #2563eb;       
+  --primary-hover: #1d4ed8;
+  --bg: #f8fafc;            
+  --card-bg: #ffffff;
+  --border: #e2e8f0;        
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --danger: #ef4444;
+  --danger-bg: #fef2f2;
+  --success: #10b981;
+  --success-bg: #ecfdf5;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f172a;
+    --card-bg: #1e293b;
+    --border: #334155;
+    --text-main: #f1f5f9;
+    --text-muted: #94a3b8;
+    --danger-bg: #450a0a;
+    --success-bg: #064e3b;
+  }
+}
+
+body { 
+  font-family: 'Inter', system-ui, sans-serif; 
+  background-color: var(--bg);
+  color: var(--text-main);
+  max-width: 1250px; 
+  margin: 1.5rem auto; 
+  padding: 0 1rem; 
+}
+
+.card { 
+  background: var(--card-bg); 
+  border: 1px solid var(--border);
+  border-radius: 12px; 
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* --- FILTRY --- */
+.filter-bar { display: flex; gap: 10px; margin-bottom: 5px; }
+.filter-btn {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  padding: 10px 20px;
+  border-radius: 8px;
+  color: var(--text-main);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+  background: #cbd5e1; /* Zřetelné ztmavení, ne bílá */
+  transform: translateY(-1px);
+}
+
+.filter-btn.active { 
+  background: var(--primary); 
+  color: white; 
+  border-color: var(--primary); 
+}
+
+/* --- FORMULÁŘ PŘIDÁNÍ --- */
+#createForm { display: flex; gap: 10px; }
+#createForm input { 
+  flex: 1; 
+  padding: 12px 16px; 
+  background: var(--card-bg); 
+  color: var(--text-main);
+  border: 1px solid var(--border); 
+  border-radius: 8px;
+}
+#createForm button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  font-weight: 700;
+  padding: 0 25px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#createForm button:hover {
+  background: var(--primary-hover);
+}
+
+/* --- TABULKA --- */
+table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+th, td { padding: 12px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+
+/* Sloupce - dostatek místa pro tlustá tlačítka */
+th:nth-child(1), td:nth-child(1) { width: 45px; }   
+th:nth-child(2), td:nth-child(2) { width: auto; }   
+th:nth-child(3), td:nth-child(3) { width: 150px; }  
+th:nth-child(4), td:nth-child(4) { width: 420px; } 
+
+/* Přeškrtnutí textu úkolu */
+.row-completed td strong, tr[style*="line-through"] strong {
+  text-decoration: line-through !important;
+  color: var(--text-muted) !important;
+  opacity: 0.6;
+}
+
+/* --- AKČNÍ TLAČÍTKA --- */
+.actions { display: flex; gap: 10px; }
+.actions button, .actions a button {
+  padding: 12px 18px; 
+  border-radius: 8px;
+  border: 2px solid var(--border); 
+  background: var(--card-bg);
+  color: var(--text-main);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+/* Hover pro Hotovo a Upravit: Bílé pozadí a černý text */
+.actions button:not(.btn-del):hover, 
+.actions a button:hover {
+  background: #ffffff !important;
+  color: #000000 !important;
+  border-color: #000000;
+}
+
+/* Hover pro Smazat: Bílé pozadí a červený text */
+.btn-del:hover {
+  background: #ffffff !important;
+  color: var(--danger) !important;
+  border-color: var(--danger) !important;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
+}
+
+/* --- ODZNAKY (STAVY) --- */
+.badge {
+  display: inline-block;
+  width: 115px;
+  text-align: center;
+  padding: 8px 0;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+.badge-wait {
+  background: var(--danger-bg);
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+}
+.badge-done {
+  background: var(--success-bg);
+  color: var(--success);
+  border: 1px solid var(--success);
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+}

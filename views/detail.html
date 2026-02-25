@@ -1,15 +1,23 @@
 <div class="card">
-  <h2>📖 {{title}}</h2>
-  <p><b>Stav:</b> {{completed}}</p>
-  
-  <div style="background: #f9f9f9; padding: 1rem; border-radius: 5px; margin: 1rem 0;">
-    <p><b>📝 Detail:</b></p>
-    <p style="white-space: pre-wrap;">{{description}}</p>
-  </div>
+  <form id="editForm" data-id="{{id}}">
+    <h2>📖 Upravit úkol</h2>
+    
+    <div style="margin-bottom: 1.5rem;">
+      <label><b>Název úkolu:</b></label>
+      <input type="text" name="title" value="{{title}}" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border);">
+    </div>
 
-  <div class="actions">
-    <a href="/edit/{{id}}"><button type="button">✏️ Upravit úkol</button></a>
-    <button data-delete-id="{{id}}" class="btn-del">🗑️ Smazat</button>
-    <a href="/"><button type="button">⬅️ Zpět na seznam</button></a>
-  </div>
+    <div style="background: var(--bg); padding: 1.5rem; border-radius: 10px; margin: 1rem 0; border: 1px solid var(--border);">
+      <p><b>📝 Detail úkolu:</b></p>
+      <textarea name="description" rows="5" style="width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 10px; font-family: inherit;">{{description}}</textarea>
+    </div>
+
+    <input type="hidden" name="completed" value="{{#if completed}}on{{/if}}">
+
+    <div class="actions">
+      <button type="submit" style="background: var(--primary); color: white;">💾 Uložit změny</button>
+      <a href="/"><button type="button">⬅️ Zpět na seznam</button></a>
+      <button type="button" data-delete-id="{{id}}" class="btn-del">🗑️ Smazat</button>
+    </div>
+  </form>
 </div>
