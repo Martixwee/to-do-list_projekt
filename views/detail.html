@@ -1,11 +1,15 @@
 <div class="card">
-  <h2>Detail úkolu</h2>
-  <p><b>ID:</b> {{id}}</p>
-  <p><b>Úkol:</b> {{title}}</p>
+  <h2>📖 {{title}}</h2>
   <p><b>Stav:</b> {{completed}}</p>
+  
+  <div style="background: #f9f9f9; padding: 1rem; border-radius: 5px; margin: 1rem 0;">
+    <p><b>📝 Detail:</b></p>
+    <p style="white-space: pre-wrap;">{{description}}</p>
+  </div>
 
   <div class="actions">
-    <a href="/edit/{{id}}">Upravit</a>
-    <button data-delete-id="{{id}}">Smazat</button>
+    <a href="/edit/{{id}}"><button type="button">✏️ Upravit úkol</button></a>
+    <button data-delete-id="{{id}}" class="btn-del">🗑️ Smazat</button>
+    <a href="/"><button type="button">⬅️ Zpět na seznam</button></a>
   </div>
 </div>

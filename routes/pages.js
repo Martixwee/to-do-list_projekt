@@ -17,7 +17,6 @@ function render(tpl, data) {
 }
 
 function handlePages(req, res) {
-  // --- A: STATICKÉ SOUBORY (Správné odeslání app.js) ---
   if (req.url === "/js/app.js") {
     try {
       const jsPath = path.join(__dirname, "../public/app.js");
@@ -32,45 +31,41 @@ function handlePages(req, res) {
 
   // --- B: HLAVNÍ STRÁNKA ---
   if (req.url === "/" && req.method === "GET") {
-const tasks = store.getAll();
-const rows = tasks.map((t, index) => {
-  const isDone = t.completed;
-  // Třída pro přeškrtnutí a zelené pozadí celého řádku
-  const rowClass = isDone ? 'row-completed' : '';
-  const textClass = isDone ? 'text-completed' : '';
+    const tasks = store.getAll();
+    const rows = tasks.map((t, index) => {
+      const isDone = t.completed;
+      const rowClass = isDone ? 'row-completed' : '';
+      const textClass = isDone ? 'text-completed' : '';
 
-  return `
-    <tr class="${rowClass}" data-status="${isDone ? 'completed' : 'pending'}">
-      <td style="text-align:center">${index + 1}</td>
-      <td class="${textClass}">
-        <strong>${t.title}</strong>
-      </td>
-      <td style="text-align:center">
-        <span class="badge ${isDone ? 'badge-done' : 'badge-wait'}">
-          ${isDone ? '✅ Splněno' : '⏳ Nesplněno'}
-        </span>
-      </td>
-      <td class="actions">
-        <button data-done-id="${t.id}" data-current-state="${isDone}" class="btn-status">
-          ${isDone ? '↩️ Zrušit' : '✔️ Hotovo'}
-        </button>
-        <a href="/edit/${t.id}"><button type="button">✏️ Upravit</button></a>
-        <button data-delete-id="${t.id}" class="btn-del">🗑️ Smazat</button>
-      </td>
-    </tr>
-  `;
-}).join("");
+      return `
+        <tr class="${rowClass}" data-status="${isDone ? 'completed' : 'pending'}">
+          <td style="text-align:center">${index + 1}</td>
+          <td class="${textClass}">
+            <strong>${t.title}</strong>
+          </td>
+          <td style="text-align:center">
+            <span class="badge ${isDone ? 'badge-done' : 'badge-wait'}">
+              ${isDone ? '✅ Splněno' : '⏳ Nesplněno'}
+            </span>
+          </td>
+          <td class="actions">
+            <button data-done-id="${t.id}" data-current-state="${isDone}" class="btn-status">
+              ${isDone ? '↩️ Zrušit' : '✔️ Hotovo'}
+            </button>
+            <a href="/detail/${t.id}"><button type="button">🔍 Detail</button></a>
+            <a href="/edit/${t.id}"><button type="button">✏️ Upravit</button></a>
+            <button data-delete-id="${t.id}" class="btn-del">🗑️ Smazat</button>
+          </td>
+        </tr>
+      `;
+    }).join("");
 
     const indexTpl = loadView("index.html");
     const content = render(indexTpl, { rows: rows || '<tr><td colspan="4">Seznam je prázdný.</td></tr>' });
     
     res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
     const layout = loadView("layout.html");
-    return res.end(render(layout, { 
-      title: "ToDo List", 
-      heading: "Můj seznam úkolů", 
-      content: content 
-    }));
+    return res.end(render(layout, { title: "ToDo List", heading: "Můj seznam úkolů", content: content }));
   }
 
   // --- C: STRÁNKA ÚPRAVY ---
@@ -78,25 +73,39 @@ const rows = tasks.map((t, index) => {
     const id = Number(req.url.split("/")[2]);
     const task = store.getAll().find(t => t.id === id);
 
-    if (!task) {
-      res.writeHead(404);
-      return res.end("Úkol nenalezen");
-    }
+    if (!task) { res.writeHead(404); return res.end("Úkol nenalezen"); }
 
     const editTpl = loadView("edit.html");
     const content = render(editTpl, {
       id: task.id,
       title: task.title,
+      description: task.description || "", // Přidání popisu do šablony
       checked: task.completed ? "checked" : ""
     });
 
     res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
     const layout = loadView("layout.html");
-    return res.end(render(layout, { 
-      title: "Upravit úkol", 
-      heading: "Upravit úkol",
-      content: content 
-    }));
+    return res.end(render(layout, { title: "Upravit úkol", heading: "Upravit úkol", content: content }));
+  }
+
+  // --- D: STRÁNKA DETAILU (NOVÁ) ---
+  if (req.url.startsWith("/detail/") && req.method === "GET") {
+    const id = Number(req.url.split("/")[2]);
+    const task = store.getAll().find(t => t.id === id);
+
+    if (!task) { res.writeHead(404); return res.end("Úkol nenalezen"); }
+
+    const detailTpl = loadView("detail.html");
+    const content = render(detailTpl, {
+      id: task.id,
+      title: task.title,
+      description: task.description || "Žádný detail k tomuto úkolu nebyl přidán.",
+      completed: task.completed ? "✅ Splněno" : "⏳ Nesplněno"
+    });
+
+    res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
+    const layout = loadView("layout.html");
+    return res.end(render(layout, { title: "Detail úkolu", heading: "Detail úkolu", content: content }));
   }
 
   return false;

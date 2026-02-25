@@ -4,14 +4,8 @@ async function api(path, options) {
     ...options,
   });
   
-  // Zkusíme načíst JSON, pokud to nejde, vezmeme text
   let data;
-  try {
-    data = await res.json();
-  } catch (e) {
-    data = await res.text();
-  }
-
+  try { data = await res.json(); } catch (e) { data = await res.text(); }
   if (!res.ok) throw { status: res.status, data };
   return data;
 }
@@ -32,25 +26,26 @@ document.addEventListener("click", async (e) => {
     }
   }
 
-const delBtn = e.target.closest("[data-delete-id]");
-if (delBtn) {
-  // Najdeme název úkolu v tom samém řádku pro lepší UX
-  const taskName = delBtn.closest("tr").querySelector("strong").innerText;
-  if (confirm(`Opravdu chcete smazat úkol: "${taskName}"?`)) {
-    try {
-      await api(`/api/tasks/${delBtn.dataset.deleteId}`, { method: "DELETE" });
-      window.location.reload();
-    } catch (err) {
-      alert("Nepodařilo se smazat úkol. Zkuste to znovu.");
+  const delBtn = e.target.closest("[data-delete-id]");
+  if (delBtn) {
+    // Oprava kvůli detail.html (kde už není <tr> tag)
+    const trElement = delBtn.closest("tr");
+    const taskName = trElement ? trElement.querySelector("strong").innerText : "tento úkol";
+    
+    if (confirm(`Opravdu chcete smazat ${taskName}?`)) {
+      try {
+        await api(`/api/tasks/${delBtn.dataset.deleteId}`, { method: "DELETE" });
+        window.location.href = "/"; // Vrátíme uživatele domů, aby nezůstal na smazaném detailu
+      } catch (err) {
+        alert("Nepodařilo se smazat úkol. Zkuste to znovu.");
+      }
     }
   }
-}
 });
 
 document.addEventListener("submit", async (e) => {
-  e.preventDefault(); // Zastaví to /?title=...
+  e.preventDefault(); 
 
-  // --- PŘIDÁNÍ NOVÉHO ÚKOLU ---
   if (e.target.id === "createForm") {
     const fd = new FormData(e.target);
     try {
@@ -64,12 +59,9 @@ document.addEventListener("submit", async (e) => {
     }
   }
 
-  // --- ÚPRAVA EXISTUJÍCÍHO ÚKOLU (Tohle ti tam chybělo) ---
   if (e.target.id === "editForm") {
-    const id = e.target.dataset.id; // Vezme ID z data-id="{{id}}"
+    const id = e.target.dataset.id;
     const fd = new FormData(e.target);
-    
-    // Získání stavu checkboxu (vrací true/false)
     const isCompleted = fd.get("completed") === "on";
 
     try {
@@ -77,10 +69,10 @@ document.addEventListener("submit", async (e) => {
         method: "PUT",
         body: JSON.stringify({
           title: fd.get("title"),
+          description: fd.get("description"), // Odeslání nového detailu!
           completed: isCompleted
         })
       });
-      // Po uložení nás to vrátí na hlavní seznam
       window.location.href = "/";
     } catch (err) {
       alert("Chyba při úpravě: " + JSON.stringify(err.data));
@@ -89,11 +81,9 @@ document.addEventListener("submit", async (e) => {
 });
 
 function filterTasks(status, btn) {
-  // 1. Změna aktivního tlačítka
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 
-  // 2. Filtrování řádků v tabulce
   const rows = document.querySelectorAll('tbody tr');
   rows.forEach(row => {
     const rowStatus = row.getAttribute('data-status');
