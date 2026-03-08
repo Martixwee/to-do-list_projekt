@@ -1,16 +1,46 @@
+// Pomocná funkce pro volání API
 async function api(path, options) {
   const res = await fetch(path, {
     headers: { "Content-Type": "application/json" },
     ...options,
   });
-  
+
   let data;
-  try { data = await res.json(); } catch (e) { data = await res.text(); }
+  try {
+    data = await res.json();
+  } catch (e) {
+    data = await res.text();
+  }
+
   if (!res.ok) throw { status: res.status, data };
   return data;
 }
 
+// 1. OBSLUHA KLIKNUTÍ (Mazání a rychlá změna stavu)
 document.addEventListener("click", async (e) => {
+  // --- SEKCE MAZÁNÍ ---
+  const delBtn = e.target.closest("[data-delete-id]");
+  if (delBtn) {
+    // Zabráníme tomu, aby se akce spustila vícekrát najednou
+    e.preventDefault();
+    e.stopImmediatePropagation();
+
+    // Pokusíme se najít jméno úkolu pro lepší zobrazení v confirm
+    const trElement = delBtn.closest("tr");
+    const taskName = trElement ? trElement.querySelector("strong")?.innerText : "tento úkol";
+
+    if (confirm(`Opravdu chcete smazat ${taskName || "tento úkol"}?`)) {
+      try {
+        await api(`/api/tasks/${delBtn.dataset.deleteId}`, { method: "DELETE" });
+        window.location.href = "/"; // Návrat na seznam (důležité pro detail)
+      } catch (err) {
+        alert("Chyba při mazání úkolu.");
+      }
+    }
+    return; // Ukončíme funkci, aby nepokračovala dál
+  }
+
+  // --- SEKCE RYCHLÁ ZMĚNA STAVU (z tabulky) ---
   const doneBtn = e.target.closest("[data-done-id]");
   if (doneBtn) {
     try {
@@ -22,36 +52,30 @@ document.addEventListener("click", async (e) => {
       });
       window.location.reload();
     } catch (err) {
-      alert("Chyba při změně stavu: " + JSON.stringify(err.data));
-    }
-  }
-
-  const delBtn = e.target.closest("[data-delete-id]");
-  if (delBtn) {
-    // Oprava kvůli detail.html (kde už není <tr> tag)
-    const trElement = delBtn.closest("tr");
-    const taskName = trElement ? trElement.querySelector("strong").innerText : "tento úkol";
-    
-    if (confirm(`Opravdu chcete smazat ${taskName}?`)) {
-      try {
-        await api(`/api/tasks/${delBtn.dataset.deleteId}`, { method: "DELETE" });
-        window.location.href = "/"; // Vrátíme uživatele domů, aby nezůstal na smazaném detailu
-      } catch (err) {
-        alert("Nepodařilo se smazat úkol. Zkuste to znovu.");
-      }
+      alert("Chyba při změně stavu.");
     }
   }
 });
 
+// 2. OBSLUHA FORMULÁŘŮ (Vytvoření a Editace)
 document.addEventListener("submit", async (e) => {
-  e.preventDefault(); 
+  e.preventDefault();
+  const form = e.target;
+  const fd = new FormData(form);
+  const title = fd.get("title")?.trim();
 
-  if (e.target.id === "createForm") {
-    const fd = new FormData(e.target);
+  // Společná validace názvu
+  if (title && title.length < 3) {
+    alert("Název úkolu musí mít alespoň 3 znaky!");
+    return;
+  }
+
+  // A: Vytvoření nového úkolu
+  if (form.id === "createForm") {
     try {
       await api("/api/tasks", { 
         method: "POST", 
-        body: JSON.stringify({ title: fd.get("title") }) 
+        body: JSON.stringify({ title }) 
       });
       window.location.reload();
     } catch (err) {
@@ -59,17 +83,18 @@ document.addEventListener("submit", async (e) => {
     }
   }
 
-  if (e.target.id === "editForm") {
-    const id = e.target.dataset.id;
-    const fd = new FormData(e.target);
-    const isCompleted = fd.get("completed") === "on";
+  // B: Úprava existujícího úkolu
+  if (form.id === "editForm") {
+    const id = form.dataset.id;
+    // Checkbox vrací "on" pokud je zaškrtnutý, jinak null
+    const isCompleted = fd.get("completed") === "on" || fd.get("completed") === "true";
 
     try {
       await api(`/api/tasks/${id}`, {
         method: "PUT",
         body: JSON.stringify({
-          title: fd.get("title"),
-          description: fd.get("description"), // Odeslání nového detailu!
+          title,
+          description: fd.get("description"),
           completed: isCompleted
         })
       });
@@ -80,6 +105,7 @@ document.addEventListener("submit", async (e) => {
   }
 });
 
+// 3. FILTROVÁNÍ (pro index.html)
 function filterTasks(status, btn) {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');

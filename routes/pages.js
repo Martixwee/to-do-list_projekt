@@ -101,23 +101,35 @@ function handlePages(req, res) {
   }
 
   // --- D: STRÁNKA DETAILU (NOVÁ) ---
+// --- D: STRÁNKA DETAILU (OPRAVENO) ---
   if (req.url.startsWith("/detail/") && req.method === "GET") {
     const id = Number(req.url.split("/")[2]);
     const task = store.getAll().find(t => t.id === id);
 
-    if (!task) { res.writeHead(404); return res.end("Úkol nenalezen"); }
+    if (!task) {
+      res.writeHead(404);
+      return res.end("Úkol nenalezen");
+    }
 
     const detailTpl = loadView("detail.html");
+    
+    // Tady vyřešíme stav a barvu přímo v kódu
     const content = render(detailTpl, {
       id: task.id,
       title: task.title,
-      description: task.description || "Žádný detail k tomuto úkolu nebyl přidán.",
-      completed: task.completed ? "✅ Splněno" : "⏳ Nesplněno"
+      description: task.description && task.description.trim() !== "" 
+                   ? task.description 
+                   : "Tento úkol nemá žádný popis.",
+      statusText: task.completed ? "✅ Splněno" : "⏳ Nesplněno"
     });
 
     res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
     const layout = loadView("layout.html");
-    return res.end(render(layout, { title: "Detail úkolu", heading: "Detail úkolu", content: content }));
+    return res.end(render(layout, { 
+      title: "Detail úkolu", 
+      heading: "Prohlížení úkolu", 
+      content: content 
+    }));
   }
 
   return false;

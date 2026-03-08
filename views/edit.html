@@ -1,26 +1,27 @@
 <div class="card">
-  <h2>Upravit úkol: {{title}}</h2> 
-  <form id="editForm" data-id="{{id}}"> 
-    <div class="row">
-      <label>Název úkolu:</label>
-      <input type="text" name="title" value="{{title}}" required />
+  <h2>✏️ Upravit úkol</h2>
+  <form id="editForm" data-id="{{id}}">
+    <div style="margin-bottom: 1rem;">
+      <label><b>Název úkolu:</b></label><br>
+      <input type="text" name="title" value="{{title}}" required style="margin-top: 5px;">
     </div>
     
-    <div class="row">
-      <label>Popis / Detail úkolu:</label><br>
-      <textarea name="description" rows="5" style="width: 100%; max-width: 420px; padding: 0.5rem; margin-top: 0.3rem;">{{description}}</textarea>
+    <div style="margin-bottom: 1rem;">
+      <label><b>Podrobný popis:</b></label><br>
+      <textarea name="description" rows="6" style="margin-top: 5px; font-family: inherit;">{{description}}</textarea>
     </div>
-    
-    <div class="row">
-      <label>
-        <input type="checkbox" name="completed" {{checked}} /> Splněno
+
+    <div style="margin-bottom: 1.5rem;">
+      <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+        <input type="hidden" name="completed" value="false">
+        <input type="checkbox" name="completed" value="true" {{checked}}> 
+        <b>Označit jako hotové</b>
       </label>
     </div>
-    
+
     <div class="actions">
-      <button type="submit">Uložit změny</button>
-      <a href="/"><button type="button">Zrušit</button></a>
+      <button type="submit" style="background: #059669; color: white; border: none;">💾 Uložit změny</button>
+      <a href="/detail/{{id}}"><button type="button">❌ Zrušit</button></a>
     </div>
   </form>
-  <p id="editMsg"></p>
 </div>

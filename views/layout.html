@@ -5,27 +5,54 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>{{title}}</title>
   <style>
-    body { font-family: system-ui, sans-serif; max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
-    table { border-collapse: collapse; width: 100%; }
-    th, td { border: 1px solid #ccc; padding: .5rem; text-align: left; }
-    form .row { margin-bottom: .6rem; }
-    input { padding: .35rem; width: 100%; max-width: 420px; }
-    button { padding: .5rem .9rem; cursor: pointer; }
-    a { text-decoration: none; }
-    .muted { color: #666; font-size: .95rem; }
-    .actions a, .actions button { margin-right: .5rem; }
-    .topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem; }
-    .card { border: 1px solid #ddd; border-radius: 10px; padding: 1rem; margin: 1rem 0; }
+    body { 
+      font-family: system-ui, sans-serif; 
+      max-width: 1000px; 
+      margin: 2rem auto; 
+      padding: 0 1rem; 
+      padding-bottom: 3rem; 
+      background-color: #f4f7f6;
+    }
+    .topbar { margin-bottom: 1rem; }
+    
+    /* Hlavní ohraničení (karta) */
+    .card { 
+      border: 1px solid #ddd; 
+      border-radius: 12px; 
+      padding: 2rem; 
+      background: #ffffff;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+
+    /* Tabulka s oddělenými sloupci */
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th { text-align: left; padding: 12px; border-bottom: 2px solid #eee; color: #666; }
+    td { padding: 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
+    
+    /* Rozdělení buněk */
+    .col-id { width: 50px; }
+    .col-task { width: auto; }
+    .col-status { width: 100px; text-align: center; }
+    .col-actions { width: 220px; }
+
+    .actions { display: flex; gap: 8px; }
+    button { padding: .6rem 1rem; cursor: pointer; border-radius: 6px; border: 1px solid #ccc; background: white; }
+    button:hover { background: #f0f0f0; }
+    .btn-del { color: red; border-color: #ffcccc; }
+    .btn-del:hover { background: #fff0f0; }
+    
+    input[type="text"], textarea { width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; }
   </style>
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
   <div class="topbar">
-    <h1 style="margin:0">{{heading}}</h1>
-    <div><a href="/">Domů</a></div>
+    <h1>{{heading}}</h1>
   </div>
-
-  {{content}}
+  
+  <div class="card">
+    {{content}}
+  </div>
 
   <script src="/js/app.js"></script>
 </body>

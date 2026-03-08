@@ -56,7 +56,7 @@ body {
 }
 
 .filter-btn:hover {
-  background: #cbd5e1; /* Zřetelné ztmavení, ne bílá */
+  background: #cbd5e1;
   transform: translateY(-1px);
 }
 
@@ -84,48 +84,66 @@ body {
   padding: 0 25px;
   border-radius: 8px;
   cursor: pointer;
-  transition: background 0.2s;
-}
-#createForm button:hover {
-  background: var(--primary-hover);
 }
 
 /* --- TABULKA --- */
-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+table { 
+  width: 100%; 
+  border-collapse: collapse; 
+  table-layout: fixed; /* Nutné pro dodržení šířek sloupců */
+}
 th, td { padding: 12px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
 
-/* Sloupce - dostatek místa pro tlustá tlačítka */
-th:nth-child(1), td:nth-child(1) { width: 45px; }   
-th:nth-child(2), td:nth-child(2) { width: auto; }   
-th:nth-child(3), td:nth-child(3) { width: 150px; }  
-th:nth-child(4), td:nth-child(4) { width: 420px; } 
+/* Sloupce - Úprava šířek pro fixní tlačítka */
+th:nth-child(1), td:nth-child(1) { width: 45px; }   /* # */
+th:nth-child(2), td:nth-child(2) { width: auto; }   /* ÚKOL */
+th:nth-child(3), td:nth-child(3) { width: 140px; }  /* STAV */
+th:nth-child(4), td:nth-child(4) { width: 460px; }  /* AKCE - dost místa pro 4 tlačítka */
 
-/* Přeškrtnutí textu úkolu */
+/* Zajištění, aby text úkolu nepřetékal */
+td strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .row-completed td strong, tr[style*="line-through"] strong {
   text-decoration: line-through !important;
   color: var(--text-muted) !important;
   opacity: 0.6;
 }
 
-/* --- AKČNÍ TLAČÍTKA --- */
-.actions { display: flex; gap: 10px; }
+/* --- AKČNÍ TLAČÍTKA (STEJNÁ ŠÍŘKA) --- */
+.actions { 
+  display: flex; 
+  gap: 8px; 
+  justify-content: flex-start;
+}
+
 .actions button, .actions a button {
-  padding: 12px 18px; 
+  /* Tady nastavujeme pevnou šířku pro všechna tlačítka */
+  width: 105px; 
+  height: 42px;
+  padding: 0; 
+  
   border-radius: 8px;
   border: 2px solid var(--border); 
   background: var(--card-bg);
   color: var(--text-main);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;
   white-space: nowrap;
+  
   display: flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 5px;
   transition: all 0.2s;
 }
 
-/* Hover pro Hotovo a Upravit: Bílé pozadí a černý text */
+/* Hover efekty - Bílé pozadí */
 .actions button:not(.btn-del):hover, 
 .actions a button:hover {
   background: #ffffff !important;
@@ -133,7 +151,7 @@ th:nth-child(4), td:nth-child(4) { width: 420px; }
   border-color: #000000;
 }
 
-/* Hover pro Smazat: Bílé pozadí a červený text */
+/* Smazat hover - Bílo-červený */
 .btn-del:hover {
   background: #ffffff !important;
   color: var(--danger) !important;
@@ -163,4 +181,59 @@ th:nth-child(4), td:nth-child(4) { width: 420px; }
   color: var(--success);
   border: 1px solid var(--success);
   box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+}
+/* Přehledné oddělení řádků v tabulce */
+table tbody tr {
+  border-bottom: 1px solid var(--border);
+}
+
+table td, table th {
+  padding: 1rem;
+  border: none; /* Odstraní původní mřížku, pokud ji nechceš */
+  border-bottom: 1px solid var(--border);
+}
+table {
+  width: 100%;
+  border-collapse: collapse; /* Toto odstraní mezery mezi čarami */
+  margin-top: 1rem;
+}
+
+th {
+  background-color: var(--bg);
+  text-align: left;
+  padding: 12px;
+  border-bottom: 2px solid var(--border);
+}
+
+td {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Zvýraznění při přejetí myší */
+tbody tr:hover {
+  background-color: var(--bg);
+}
+/* Základní vzhled tlačítek filtru */
+.filter-btn {
+  background-color: #2563eb; /* Modrá barva */
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  margin-right: 5px;
+}
+
+/* Barva při najetí myší - o něco tmavší modrá */
+.filter-btn:hover {
+  background-color: #1d4ed8;
+}
+
+/* Barva pro aktivní (vybrané) tlačítko - výrazná modrá */
+.filter-btn.active {
+  background-color: #1e3a8a;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+  outline: 2px solid #60a5fa;
 }
